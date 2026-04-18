@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>PDF to Image Converter</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,538 +13,721 @@
             box-sizing: border-box;
         }
 
- 
-    :root {
-        --primary: #3b82f6;
-        --primary-dark: #1d4ed8;
-        --success: #10b981;
-        --warning: #f59e0b;
-        --danger: #ef4444;
-        --bg: #f9fafb;
-        --bg-white: #ffffff;
-        --border: #e5e7eb;
-        --text-dark: #1f2937;
-        --text-light: #6b7280;
-        --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
-        background: var(--bg);
-        color: var(--text-dark);
-        min-height: 100vh;
-        padding: 16px;
-    }
-
-    .container {
-        max-width: 1000px;
-        margin: 0 auto;
-    }
-
-    .header {
-        background: var(--bg-white);
-        padding: 24px 20px;
-        border-bottom: 1px solid var(--border);
-        margin-bottom: 24px;
-        border-radius: 8px;
-        box-shadow: var(--shadow);
-    }
-
-    .header-content {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-
-    .header-icon {
-        font-size: 2rem;
-        color: var(--primary);
-    }
-
-    .header h1 {
-        font-size: 1.75rem;
-        font-weight: 600;
-        color: var(--text-dark);
-        margin: 0;
-    }
-
-    .header p {
-        font-size: 0.9rem;
-        color: var(--text-light);
-        margin: 4px 0 0 0;
-    }
-
-    .main-section {
-        background: var(--bg-white);
-        border-radius: 8px;
-        box-shadow: var(--shadow);
-        padding: 24px 20px;
-        margin-bottom: 20px;
-    }
-
-    .message {
-        padding: 12px 16px;
-        border-radius: 6px;
-        margin-bottom: 16px;
-        display: none;
-        font-size: 0.9rem;
-        border-left: 4px solid;
-    }
-
-    .message.error {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background: #fee2e2;
-        color: #991b1b;
-        border-color: var(--danger);
-    }
-
-    .message.success {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background: #d1fae5;
-        color: #065f46;
-        border-color: var(--success);
-    }
-
-    .message.show {
-        display: flex !important;
-    }
-
-    .upload-box {
-        border: 2px dashed var(--border);
-        border-radius: 8px;
-        padding: 40px 20px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        background: var(--bg);
-    }
-
-    .upload-box:hover {
-        border-color: var(--primary);
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), transparent);
-    }
-
-    .upload-box.dragover {
-        border-color: var(--primary);
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), transparent);
-    }
-
-    .upload-icon {
-        font-size: 3rem;
-        color: var(--primary);
-        margin-bottom: 12px;
-    }
-
-    .upload-box p {
-        color: var(--text-light);
-        margin-bottom: 8px;
-        font-size: 0.95rem;
-    }
-
-    .upload-box p strong {
-        color: var(--text-dark);
-        font-weight: 600;
-    }
-
-    #pdfInput {
-        display: none;
-    }
-
-    .button-group {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        flex-wrap: wrap;
-        margin-top: 16px;
-    }
-
-    .btn {
-        padding: 10px 18px;
-        border: none;
-        border-radius: 6px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        white-space: nowrap;
-    }
-
-    .btn-primary {
-        background: var(--primary);
-        color: white;
-    }
-
-    .btn-primary:hover:not(:disabled) {
-        background: var(--primary-dark);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-    }
-
-    .btn-primary:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    .btn-secondary {
-        background: var(--bg);
-        color: var(--text-dark);
-        border: 1px solid var(--border);
-    }
-
-    .btn-secondary:hover {
-        background: white;
-        border-color: var(--primary);
-        color: var(--primary);
-    }
-
-    .btn-small {
-        padding: 8px 12px;
-        font-size: 0.8rem;
-    }
-
-    .file-info {
-        background: var(--bg);
-        padding: 16px;
-        border-radius: 6px;
-        margin-bottom: 20px;
-        border-left: 4px solid var(--primary);
-        display: none;
-    }
-
-    .file-info.show {
-        display: block;
-    }
-
-    .file-name {
-        font-weight: 600;
-        color: var(--text-dark);
-        margin-bottom: 4px;
-        word-break: break-word;
-    }
-
-    .file-details {
-        font-size: 0.85rem;
-        color: var(--text-light);
-    }
-
-    .controls-section {
-        display: none;
-    }
-
-    .controls-section.show {
-        display: block;
-    }
-
-    .control-row {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-        margin-bottom: 20px;
-    }
-
-    .control-group {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    .control-group label {
-        font-weight: 500;
-        color: var(--text-dark);
-        font-size: 0.9rem;
-    }
-
-    .control-group input,
-    .control-group select {
-        padding: 8px 12px;
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        font-size: 0.9rem;
-        background: white;
-        color: var(--text-dark);
-    }
-
-    .control-group input:focus,
-    .control-group select:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 10px;
-        margin-top: 20px;
-        flex-wrap: wrap;
-    }
-
-    .status-box {
-        background: var(--bg);
-        padding: 20px;
-        border-radius: 6px;
-        margin-bottom: 20px;
-        display: none;
-        border: 1px solid var(--border);
-    }
-
-    .status-box.show {
-        display: block;
-    }
-
-    .status-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 12px;
-        font-weight: 500;
-    }
-
-    .status-spinner {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        border: 2px solid rgba(59, 130, 246, 0.3);
-        border-top-color: var(--primary);
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-
-    .progress-bar {
-        width: 100%;
-        height: 6px;
-        background: var(--border);
-        border-radius: 3px;
-        overflow: hidden;
-        margin-bottom: 12px;
-    }
-
-    .progress-fill {
-        height: 100%;
-        background: var(--primary);
-        width: 0%;
-        transition: width 0.3s ease;
-    }
-
-    .progress-text {
-        font-size: 0.85rem;
-        color: var(--text-light);
-        text-align: center;
-    }
-
-    .gallery-section {
-        display: none;
-        margin-top: 24px;
-    }
-
-    .gallery-section.show {
-        display: block;
-    }
-
-    .gallery-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 16px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid var(--border);
-        font-weight: 600;
-        color: var(--text-dark);
-    }
-
-    .gallery {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 12px;
-    }
-
-    .image-card {
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        overflow: hidden;
-        background: var(--bg-white);
-        transition: all 0.2s ease;
-        animation: slideIn 0.3s ease;
-    }
-
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f1f5f9;
+            --bg-white: #ffffff;
+            --border: #e2e8f0;
+            --text-dark: #0f172a;
+            --text-medium: #334155;
+            --text-light: #64748b;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --radius: 12px;
+            --radius-sm: 8px;
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
 
-    .image-card:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border-color: var(--primary);
-    }
-
-    .image-preview {
-        width: 100%;
-        height: 140px;
-        background: var(--bg);
-        object-fit: contain;
-        display: block;
-    }
-
-    .image-info {
-        padding: 10px;
-    }
-
-    .page-label {
-        font-weight: 600;
-        font-size: 0.85rem;
-        color: var(--text-dark);
-        margin-bottom: 4px;
-    }
-
-    .page-size {
-        font-size: 0.75rem;
-        color: var(--text-light);
-        margin-bottom: 8px;
-    }
-
-    .image-buttons {
-        display: flex;
-        gap: 6px;
-    }
-
-    .btn-image {
-        flex: 1;
-        padding: 6px 8px;
-        border: none;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 4px;
-    }
-
-    .btn-download {
-        background: var(--success);
-        color: white;
-    }
-
-    .btn-download:hover {
-        background: #059669;
-    }
-
-    .btn-copy {
-        background: var(--primary);
-        color: white;
-    }
-
-    .btn-copy:hover {
-        background: var(--primary-dark);
-    }
-
-    .download-all-btn {
-        display: none;
-        margin-bottom: 20px;
-    }
-
-    .download-all-btn.show {
-        display: flex;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: var(--text-light);
-    }
-
-    .empty-icon {
-        font-size: 4rem;
-        color: var(--border);
-        margin-bottom: 16px;
-    }
-
-    .empty-text {
-        font-size: 1.1rem;
-        margin-bottom: 8px;
-        color: var(--text-dark);
-        font-weight: 500;
-    }
-
-    @media (max-width: 640px) {
-        .header {
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: var(--bg);
+            color: var(--text-dark);
+            min-height: 100vh;
             padding: 16px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            padding: 28px 24px;
+            margin-bottom: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 180px;
+            height: 180px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -60px;
+            left: 20%;
+            width: 240px;
+            height: 240px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
         }
 
         .header-content {
-            flex-direction: column;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(255,255,255,0.15);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            flex-shrink: 0;
+            backdrop-filter: blur(4px);
         }
 
         .header h1 {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+            letter-spacing: -0.02em;
         }
 
-        .main-section {
-            padding: 16px;
+        .header p {
+            font-size: 0.88rem;
+            color: rgba(255,255,255,0.75);
+            margin: 3px 0 0 0;
         }
 
+        /* Cards */
+        .card {
+            background: var(--bg-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 24px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+        }
+
+        /* Messages */
+        .message {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            display: none;
+            font-size: 0.875rem;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid;
+        }
+
+        .message.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #fecaca;
+        }
+
+        .message.success {
+            background: #f0fdf4;
+            color: #166534;
+            border-color: #bbf7d0;
+        }
+
+        .message.show {
+            display: flex !important;
+        }
+
+        /* Upload Area */
         .upload-box {
-            padding: 30px 15px;
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 44px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: #fafbff;
+            position: relative;
         }
 
-        .control-row {
-            grid-template-columns: 1fr;
+        .upload-box:hover, .upload-box:focus-within {
+            border-color: var(--primary);
+            background: #f5f3ff;
         }
 
-        .action-buttons {
-            flex-direction: column;
+        .upload-box.dragover {
+            border-color: var(--primary);
+            background: #ede9fe;
+            transform: scale(1.01);
         }
 
-        .btn {
-            width: 100%;
-            justify-content: center;
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 14px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
         }
 
-        .gallery {
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        .upload-box p {
+            color: var(--text-light);
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .upload-box p strong {
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        #pdfInput {
+            display: none;
         }
 
         .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            letter-spacing: 0.01em;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: white;
+            box-shadow: 0 2px 8px rgba(79,70,229,0.35);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            box-shadow: 0 4px 16px rgba(79,70,229,0.5);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-medium);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #fafbff;
+        }
+
+        .btn-danger-outline {
+            background: white;
+            color: var(--danger);
+            border: 1px solid #fecaca;
+        }
+
+        .btn-danger-outline:hover {
+            background: #fef2f2;
+        }
+
+        /* File Info */
+        .file-info {
+            background: linear-gradient(135deg, #fafbff, #f5f3ff);
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+            border: 1px solid #e0e7ff;
+            display: none;
+        }
+
+        .file-info.show {
+            display: block;
+        }
+
+        .file-info-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .file-icon-badge {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            word-break: break-word;
+            font-size: 0.95rem;
+        }
+
+        .file-details {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        /* Controls */
+        .controls-section {
+            display: none;
+        }
+
+        .controls-section.show {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 12px;
+        }
+
+        .control-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            display: flex;
             flex-direction: column;
+            gap: 6px;
         }
 
-        .button-group .btn {
+        .control-group label {
+            font-weight: 500;
+            color: var(--text-medium);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .control-group label i {
+            color: var(--primary-light);
+            font-size: 0.8rem;
+        }
+
+        .control-group input,
+        .control-group select {
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            background: white;
+            color: var(--text-dark);
+            transition: border-color 0.15s, box-shadow 0.15s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .control-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Status / Progress */
+        .status-box {
+            background: #fafbff;
+            padding: 20px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            display: none;
+            border: 1px solid #e0e7ff;
+        }
+
+        .status-box.show {
+            display: block;
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            color: var(--text-medium);
+            font-size: 0.9rem;
+        }
+
+        .status-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(79, 70, 229, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .progress-bar {
             width: 100%;
+            height: 8px;
+            background: #e0e7ff;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
         }
-    }
 
-    .spinner-text::after {
-        content: '';
-        animation: dots 1.5s steps(4, end) infinite;
-    }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #7c3aed);
+            width: 0%;
+            transition: width 0.35s ease;
+            border-radius: 4px;
+        }
 
-    @keyframes dots {
-        0%, 20% { content: ''; }
-        40% { content: '.'; }
-        60% { content: '..'; }
-        80%, 100% { content: '...'; }
-    }
-</style>
- 
+        .progress-text {
+            font-size: 0.82rem;
+            color: var(--text-light);
+            text-align: right;
+        }
 
+        /* Gallery */
+        .gallery-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .gallery-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .count-badge {
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .gallery-section {
+            display: none;
+            margin-top: 8px;
+        }
+
+        .gallery-section.show {
+            display: block;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .image-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            background: var(--bg-white);
+            transition: all 0.2s ease;
+            animation: fadeUp 0.3s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .image-card:hover {
+            box-shadow: var(--shadow);
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 130px;
+            background: var(--bg);
+            object-fit: contain;
+            display: block;
+        }
+
+        .image-info {
+            padding: 10px;
+        }
+
+        .page-label {
+            font-weight: 600;
+            font-size: 0.82rem;
+            color: var(--text-dark);
+            margin-bottom: 3px;
+        }
+
+        .page-size {
+            font-size: 0.72rem;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .image-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-image {
+            flex: 1;
+            padding: 6px 8px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.73rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-download {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .btn-download:hover {
+            background: #d1fae5;
+        }
+
+        .btn-copy {
+            background: #ede9fe;
+            color: #4c1d95;
+            border: 1px solid #c4b5fd;
+        }
+
+        .btn-copy:hover {
+            background: #ddd6fe;
+        }
+
+        /* Download all */
+        .download-all-wrap {
+            display: none;
+            margin-bottom: 16px;
+        }
+
+        .download-all-wrap.show {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-icon {
+            font-size: 3.5rem;
+            color: #cbd5e1;
+            margin-bottom: 14px;
+        }
+
+        .empty-text {
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+            color: var(--text-medium);
+            font-weight: 500;
+        }
+
+        .empty-sub {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 20px 16px;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .upload-box {
+                padding: 32px 14px;
+            }
+
+            .upload-icon {
+                font-size: 2.5rem;
+            }
+
+            .control-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .control-row > :last-child {
+                grid-column: 1 / -1;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .button-group .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .download-all-wrap {
+                flex-direction: column;
+            }
+
+            .download-all-wrap .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .image-preview {
+                height: 100px;
+            }
+        }
+
+        /* Spinner text animation */
+        .spinner-text::after {
+            content: '';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        /* Cancel button state */
+        #cancelBtn {
+            display: none;
+        }
+
+        #cancelBtn.show {
+            display: inline-flex;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -557,453 +739,466 @@
                 </div>
                 <div>
                     <h1>PDF to Image</h1>
-                    <p>PDFをページごとに画像に変換します</p>
+                    <p>PDFをページごとに画像（PNG / JPEG）へ変換</p>
                 </div>
             </div>
         </div>
 
- 
-    <!-- Main Content -->
-    <div class="main-section">
-        <!-- Messages -->
-        <div class="message error" id="errorMessage">
-            <i class="fas fa-exclamation-circle"></i>
-            <span id="errorText"></span>
-        </div>
-        <div class="message success" id="successMessage">
-            <i class="fas fa-check-circle"></i>
-            <span id="successText"></span>
-        </div>
-
-        <!-- Initial Upload State -->
-        <div id="uploadState">
-            <div class="upload-box" id="uploadBox">
-                <div class="upload-icon">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                </div>
-                <p><strong>PDFファイルをドラッグ＆ドロップ</strong></p>
-                <p>または以下のボタンをクリック</p>
-                <div class="button-group">
-                    <button class="btn btn-primary" id="selectBtn">
-                        <i class="fas fa-folder-open"></i>
-                        ファイルを選択
-                    </button>
-                </div>
-                <input type="file" id="pdfInput" accept=".pdf" />
+        <!-- Main Card -->
+        <div class="card">
+            <!-- Messages -->
+            <div class="message error" id="errorMessage">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="errorText"></span>
             </div>
-            <div class="empty-state" id="emptyState">
-                <div class="empty-icon">
-                    <i class="fas fa-file-image"></i>
-                </div>
-                <p class="empty-text">PDFファイルをアップロードして開始</p>
-                <p style="font-size: 0.9rem;">複数ページのPDFは、1ページごとに別の画像に変換されます</p>
-            </div>
-        </div>
-
-        <!-- File Selected State -->
-        <div id="fileState" style="display: none;">
-            <div class="file-info" id="fileInfo">
-                <div class="file-name">
-                    <i class="fas fa-file-pdf"></i>
-                    <span id="fileName"></span>
-                </div>
-                <div class="file-details" id="fileDetails"></div>
+            <div class="message success" id="successMessage">
+                <i class="fas fa-check-circle"></i>
+                <span id="successText"></span>
             </div>
 
-            <div class="controls-section" id="controlsSection">
-                <div class="control-row">
-                    <div class="control-group">
-                        <label for="quality">
-                            <i class="fas fa-image"></i> 画像品質
-                        </label>
-                        <select id="quality">
-                            <option value="1">低 (高速)</option>
-                            <option value="2" selected>中</option>
-                            <option value="3">高</option>
-                            <option value="4">最高</option>
-                        </select>
+            <!-- Upload State -->
+            <div id="uploadState">
+                <div class="upload-box" id="uploadBox" tabindex="0" role="button" aria-label="PDFファイルを選択またはドラッグ＆ドロップ">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
                     </div>
-
-                    <div class="control-group">
-                        <label for="format">
-                            <i class="fas fa-palette"></i> ファイル形式
-                        </label>
-                        <select id="format">
-                            <option value="png" selected>PNG (推奨)</option>
-                            <option value="jpg">JPEG (小容量)</option>
-                        </select>
+                    <p><strong>PDFファイルをドラッグ＆ドロップ</strong></p>
+                    <p>または以下のボタンをクリック</p>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="selectBtn" type="button">
+                            <i class="fas fa-folder-open"></i>
+                            ファイルを選択
+                        </button>
                     </div>
+                    <input type="file" id="pdfInput" accept=".pdf" />
+                </div>
 
-                    <div class="control-group">
-                        <label for="pages">
-                            <i class="fas fa-list-ol"></i> ページ範囲
-                        </label>
-                        <input type="text" id="pages" placeholder="例: 1,3,5 または 1-5">
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fas fa-file-image"></i></div>
+                    <p class="empty-text">PDFをアップロードして開始</p>
+                    <p class="empty-sub">複数ページのPDFも対応。大きなファイルはページ数が多くなります。</p>
+                </div>
+            </div>
+
+            <!-- File Selected State -->
+            <div id="fileState" style="display:none;">
+                <!-- File Info -->
+                <div class="file-info" id="fileInfo">
+                    <div class="file-info-row">
+                        <div class="file-icon-badge"><i class="fas fa-file-pdf"></i></div>
+                        <div>
+                            <div class="file-name" id="fileName"></div>
+                            <div class="file-details" id="fileDetails"></div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="action-buttons">
-                    <button class="btn btn-primary" id="convertBtn" style="flex: 1;">
-                        <i class="fas fa-play"></i>
-                        変換開始
+                <!-- Controls -->
+                <div class="controls-section" id="controlsSection">
+                    <div class="section-title">変換設定</div>
+                    <div class="control-row">
+                        <div class="control-group">
+                            <label for="quality"><i class="fas fa-sliders-h"></i> 品質</label>
+                            <select id="quality">
+                                <option value="1">低（高速）</option>
+                                <option value="2" selected>中</option>
+                                <option value="3">高</option>
+                                <option value="4">最高</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label for="format"><i class="fas fa-image"></i> 形式</label>
+                            <select id="format">
+                                <option value="png" selected>PNG（推奨）</option>
+                                <option value="jpeg">JPEG（小容量）</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label for="pages"><i class="fas fa-list-ol"></i> ページ範囲</label>
+                            <input type="text" id="pages" placeholder="例: 1-5 または 1,3,7">
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="convertBtn" style="flex:1;">
+                            <i class="fas fa-bolt"></i>
+                            変換開始
+                        </button>
+                        <button class="btn btn-danger-outline" id="cancelBtn" type="button">
+                            <i class="fas fa-stop-circle"></i>
+                            中止
+                        </button>
+                        <button class="btn btn-secondary" id="resetBtn" type="button">
+                            <i class="fas fa-redo"></i>
+                            リセット
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="status-box" id="statusBox">
+                    <div class="status-header">
+                        <div class="status-left">
+                            <div class="status-spinner"></div>
+                            <span>変換中<span class="spinner-text"></span></span>
+                        </div>
+                        <span class="progress-text" id="progressText">0 / 0 ページ</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+
+                <!-- Download All -->
+                <div class="download-all-wrap" id="downloadAllBtn">
+                    <button class="btn btn-primary" id="downloadZipBtn" style="flex:1;">
+                        <i class="fas fa-file-archive"></i>
+                        すべてをZIPでダウンロード
                     </button>
-                    <button class="btn btn-secondary" id="resetBtn">
-                        <i class="fas fa-redo"></i>
-                        リセット
-                    </button>
                 </div>
-            </div>
 
-            <!-- Status Box -->
-            <div class="status-box" id="statusBox">
-                <div class="status-header">
-                    <div class="status-spinner"></div>
-                    <span>変換中<span class="spinner-text"></span></span>
+                <!-- Gallery -->
+                <div class="gallery-section" id="gallerySection">
+                    <div class="gallery-header-row">
+                        <div class="gallery-title">
+                            <i class="fas fa-images"></i>
+                            変換済み画像
+                            <span class="count-badge" id="imageCount">0</span>
+                        </div>
+                    </div>
+                    <div class="gallery" id="gallery"></div>
                 </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <div class="progress-text" id="progressText">0/0 ページ</div>
-            </div>
-
-            <!-- Download All -->
-            <div class="download-all-btn" id="downloadAllBtn">
-                <button class="btn btn-primary" id="downloadZipBtn" style="flex: 1;">
-                    <i class="fas fa-download"></i>
-                    すべてをZIPでダウンロード
-                </button>
-            </div>
-
-            <!-- Gallery -->
-            <div class="gallery-section" id="gallerySection">
-                <div class="gallery-header">
-                    <i class="fas fa-images"></i>
-                    変換済み画像 (<span id="imageCount">0</span>)
-                </div>
-                <div class="gallery" id="gallery"></div>
             </div>
         </div>
     </div>
-</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script>
-    // Set up PDF.js worker
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    let pdfDoc = null;
-    let convertedImages = [];
-    let currentFileName = '';
+        let pdfDoc = null;
+        let convertedImages = [];
+        let currentFileName = '';
+        let isCancelled = false;
 
-    const uploadBox = document.getElementById('uploadBox');
-    const selectBtn = document.getElementById('selectBtn');
-    const pdfInput = document.getElementById('pdfInput');
-    const fileState = document.getElementById('fileState');
-    const uploadState = document.getElementById('uploadState');
-    const fileInfo = document.getElementById('fileInfo');
-    const controlsSection = document.getElementById('controlsSection');
-    const convertBtn = document.getElementById('convertBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const statusBox = document.getElementById('statusBox');
-    const progressFill = document.getElementById('progressFill');
-    const progressText = document.getElementById('progressText');
-    const gallery = document.getElementById('gallery');
-    const gallerySection = document.getElementById('gallerySection');
-    const fileName = document.getElementById('fileName');
-    const fileDetails = document.getElementById('fileDetails');
-    const qualitySelect = document.getElementById('quality');
-    const formatSelect = document.getElementById('format');
-    const pagesInput = document.getElementById('pages');
-    const errorMessage = document.getElementById('errorMessage');
-    const successMessage = document.getElementById('successMessage');
-    const downloadAllBtn = document.getElementById('downloadAllBtn');
-    const downloadZipBtn = document.getElementById('downloadZipBtn');
-    const imageCount = document.getElementById('imageCount');
+        const uploadBox = document.getElementById('uploadBox');
+        const selectBtn = document.getElementById('selectBtn');
+        const pdfInput = document.getElementById('pdfInput');
+        const fileState = document.getElementById('fileState');
+        const uploadState = document.getElementById('uploadState');
+        const fileInfo = document.getElementById('fileInfo');
+        const controlsSection = document.getElementById('controlsSection');
+        const convertBtn = document.getElementById('convertBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const statusBox = document.getElementById('statusBox');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const gallery = document.getElementById('gallery');
+        const gallerySection = document.getElementById('gallerySection');
+        const fileName = document.getElementById('fileName');
+        const fileDetails = document.getElementById('fileDetails');
+        const qualitySelect = document.getElementById('quality');
+        const formatSelect = document.getElementById('format');
+        const pagesInput = document.getElementById('pages');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const downloadAllBtn = document.getElementById('downloadAllBtn');
+        const downloadZipBtn = document.getElementById('downloadZipBtn');
+        const imageCount = document.getElementById('imageCount');
 
-    selectBtn.addEventListener('click', () => pdfInput.click());
+        // File selection
+        selectBtn.addEventListener('click', () => pdfInput.click());
+        uploadBox.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') pdfInput.click(); });
+        pdfInput.addEventListener('change', handleFileSelect);
 
-    pdfInput.addEventListener('change', handleFileSelect);
-    uploadBox.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadBox.classList.add('dragover');
-    });
+        // Drag & drop
+        uploadBox.addEventListener('dragover', (e) => { e.preventDefault(); uploadBox.classList.add('dragover'); });
+        uploadBox.addEventListener('dragleave', () => uploadBox.classList.remove('dragover'));
+        uploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadBox.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const dt = new DataTransfer();
+                dt.items.add(files[0]);
+                pdfInput.files = dt.files;
+                handleFileSelect();
+            }
+        });
 
-    uploadBox.addEventListener('dragleave', () => {
-        uploadBox.classList.remove('dragover');
-    });
+        async function handleFileSelect() {
+            const file = pdfInput.files[0];
+            if (!file) return;
 
-    uploadBox.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadBox.classList.remove('dragover');
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            pdfInput.files = files;
-            handleFileSelect();
+            if (file.type !== 'application/pdf') {
+                showError('PDFファイルを選択してください');
+                return;
+            }
+
+            hideMessages();
+            currentFileName = file.name.replace(/\.pdf$/i, '');
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                pdfDoc = await pdfjsLib.getDocument({
+                    data: arrayBuffer,
+                    disableStream: false,
+                    disableAutoFetch: false,
+                }).promise;
+
+                fileName.textContent = file.name;
+                fileDetails.textContent = `${pdfDoc.numPages} ページ · ${formatFileSize(file.size)}`;
+
+                uploadState.style.display = 'none';
+                fileState.style.display = 'block';
+                fileInfo.classList.add('show');
+                controlsSection.classList.add('show');
+
+                convertedImages = [];
+                gallery.innerHTML = '';
+                gallerySection.classList.remove('show');
+                downloadAllBtn.classList.remove('show');
+            } catch (error) {
+                showError('PDFの読み込みに失敗しました: ' + error.message);
+            }
         }
-    });
 
-    async function handleFileSelect() {
-        const file = pdfInput.files[0];
-        if (!file) return;
+        convertBtn.addEventListener('click', convertPDF);
+        cancelBtn.addEventListener('click', () => { isCancelled = true; });
 
-        if (file.type !== 'application/pdf') {
-            showError('PDFファイルを選択してください');
-            return;
-        }
+        async function convertPDF() {
+            if (!pdfDoc) return;
 
-        currentFileName = file.name.replace('.pdf', '');
-        const arrayBuffer = await file.arrayBuffer();
-
-        try {
-            pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-            
-            fileName.textContent = file.name;
-            fileDetails.textContent = `${pdfDoc.numPages} ページ`;
-            
-            uploadState.style.display = 'none';
-            fileState.style.display = 'block';
-            fileInfo.classList.add('show');
-            controlsSection.classList.add('show');
-            
+            isCancelled = false;
             convertedImages = [];
+            const quality = parseInt(qualitySelect.value);
+            const format = formatSelect.value;
+            const pagesVal = pagesInput.value.trim();
+            let pagesToConvert = [];
+
+            if (pagesVal) {
+                try {
+                    pagesToConvert = parsePagesInput(pagesVal, pdfDoc.numPages);
+                } catch (error) {
+                    showError('ページ範囲が無効です: ' + error.message);
+                    return;
+                }
+            } else {
+                pagesToConvert = Array.from({ length: pdfDoc.numPages }, (_, i) => i + 1);
+            }
+
             gallery.innerHTML = '';
             gallerySection.classList.remove('show');
             downloadAllBtn.classList.remove('show');
             hideMessages();
-        } catch (error) {
-            showError('PDFの読み込みに失敗しました: ' + error.message);
-        }
-    }
 
-    convertBtn.addEventListener('click', convertPDF);
+            statusBox.classList.add('show');
+            convertBtn.disabled = true;
+            cancelBtn.classList.add('show');
 
-    async function convertPDF() {
-        if (!pdfDoc) return;
+            const totalPages = pagesToConvert.length;
+            const CHUNK = 5;
 
-        convertedImages = [];
-        const quality = parseInt(qualitySelect.value);
-        const format = formatSelect.value;
-        const pagesInput_ = pagesInput.value.trim();
-        let pagesToConvert = [];
+            for (let i = 0; i < totalPages; i++) {
+                if (isCancelled) break;
 
-        if (pagesInput_) {
-            try {
-                pagesToConvert = parsePagesInput(pagesInput_, pdfDoc.numPages);
-            } catch (error) {
-                showError('ページ範囲が無効です: ' + error.message);
-                return;
-            }
-        } else {
-            pagesToConvert = Array.from({ length: pdfDoc.numPages }, (_, i) => i + 1);
-        }
+                const pageNum = pagesToConvert[i];
+                try {
+                    const page = await pdfDoc.getPage(pageNum);
+                    const viewport = page.getViewport({ scale: quality });
 
-        gallery.innerHTML = '';
-        statusBox.classList.add('show');
-        convertBtn.disabled = true;
-        gallerySection.classList.remove('show');
-        downloadAllBtn.classList.remove('show');
-        hideMessages();
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
 
-        const scale = quality;
-        const totalPages = pagesToConvert.length;
+                    await page.render({ canvasContext: ctx, viewport }).promise;
+                    page.cleanup();
 
-        for (let i = 0; i < totalPages; i++) {
-            const pageNum = pagesToConvert[i];
-            try {
-                const page = await pdfDoc.getPage(pageNum);
-                const viewport = page.getViewport({ scale });
+                    const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+                    const quality_ = format === 'jpeg' ? 0.92 : 1;
+                    const imageData = canvas.toDataURL(mimeType, quality_);
 
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
+                    convertedImages.push({ page: pageNum, data: imageData });
 
-                await page.render({
-                    canvasContext: context,
-                    viewport: viewport
-                }).promise;
+                    // free canvas memory
+                    canvas.width = 0;
+                    canvas.height = 0;
 
-                const imageData = canvas.toDataURL(`image/${format}`, format === 'jpg' ? 0.95 : 1);
-                convertedImages.push({
-                    page: pageNum,
-                    data: imageData,
-                    canvas: canvas
-                });
+                    const pct = Math.round((i + 1) / totalPages * 100);
+                    progressFill.style.width = pct + '%';
+                    progressText.textContent = `${i + 1} / ${totalPages} ページ`;
 
-                // Update progress
-                progressFill.style.width = ((i + 1) / totalPages * 100) + '%';
-                progressText.textContent = `${i + 1}/${totalPages} ページ`;
+                    addImageToGallery(pageNum, imageData, format);
+                    gallerySection.classList.add('show');
 
-                addImageToGallery(pageNum, imageData, format);
-            } catch (error) {
-                console.error(`Page ${pageNum} conversion failed:`, error);
-            }
-        }
-
-        statusBox.classList.remove('show');
-        convertBtn.disabled = false;
-        gallerySection.classList.add('show');
-
-        if (convertedImages.length > 0) {
-            downloadAllBtn.classList.add('show');
-            imageCount.textContent = convertedImages.length;
-            showSuccess(`${convertedImages.length} ページを正常に変換しました`);
-        }
-    }
-
-    function parsePagesInput(input, totalPages) {
-        const pages = [];
-        const parts = input.split(',');
-
-        for (let part of parts) {
-            part = part.trim();
-            if (part.includes('-')) {
-                const [start, end] = part.split('-').map(p => parseInt(p.trim()));
-                if (isNaN(start) || isNaN(end) || start < 1 || end > totalPages || start > end) {
-                    throw new Error(`範囲が無効です: ${part}`);
+                    // yield to UI every chunk
+                    if ((i + 1) % CHUNK === 0) {
+                        await new Promise(r => setTimeout(r, 0));
+                    }
+                } catch (error) {
+                    console.error(`Page ${pageNum} failed:`, error);
                 }
-                for (let p = start; p <= end; p++) {
+            }
+
+            statusBox.classList.remove('show');
+            convertBtn.disabled = false;
+            cancelBtn.classList.remove('show');
+
+            if (convertedImages.length > 0) {
+                imageCount.textContent = convertedImages.length;
+                downloadAllBtn.classList.add('show');
+                if (isCancelled) {
+                    showSuccess(`変換を中止しました（${convertedImages.length} / ${totalPages} ページ完了）`);
+                } else {
+                    showSuccess(`${convertedImages.length} ページを変換しました`);
+                }
+            }
+        }
+
+        function parsePagesInput(input, totalPages) {
+            const pages = [];
+            for (let part of input.split(',')) {
+                part = part.trim();
+                if (!part) continue;
+                if (part.includes('-')) {
+                    const [s, e] = part.split('-').map(p => parseInt(p.trim()));
+                    if (isNaN(s) || isNaN(e) || s < 1 || e > totalPages || s > e) {
+                        throw new Error(`無効な範囲: ${part}`);
+                    }
+                    for (let p = s; p <= e; p++) pages.push(p);
+                } else {
+                    const p = parseInt(part);
+                    if (isNaN(p) || p < 1 || p > totalPages) throw new Error(`無効なページ番号: ${part}`);
                     pages.push(p);
                 }
-            } else {
-                const page = parseInt(part);
-                if (isNaN(page) || page < 1 || page > totalPages) {
-                    throw new Error(`ページ番号が無効です: ${page}`);
-                }
-                pages.push(page);
+            }
+            return [...new Set(pages)].sort((a, b) => a - b);
+        }
+
+        function addImageToGallery(pageNum, imageData, format) {
+            const card = document.createElement('div');
+            card.className = 'image-card';
+            card.style.animationDelay = '0ms';
+
+            const img = document.createElement('img');
+            img.className = 'image-preview';
+            img.src = imageData;
+            img.loading = 'lazy';
+
+            const info = document.createElement('div');
+            info.className = 'image-info';
+
+            const label = document.createElement('div');
+            label.className = 'page-label';
+            label.textContent = `ページ ${pageNum}`;
+
+            const size = document.createElement('div');
+            size.className = 'page-size';
+            size.textContent = `${formatFileSize(Math.round(imageData.length * 0.75))} · ${format.toUpperCase()}`;
+
+            const buttons = document.createElement('div');
+            buttons.className = 'image-buttons';
+
+            const dlBtn = document.createElement('button');
+            dlBtn.className = 'btn-image btn-download';
+            dlBtn.innerHTML = '<i class="fas fa-download"></i> DL';
+            dlBtn.addEventListener('click', () => downloadImage(pageNum, imageData, format));
+
+            const cpBtn = document.createElement('button');
+            cpBtn.className = 'btn-image btn-copy';
+            cpBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+            cpBtn.addEventListener('click', () => copyToClipboard(imageData, pageNum));
+
+            buttons.append(dlBtn, cpBtn);
+            info.append(label, size, buttons);
+            card.append(img, info);
+            gallery.appendChild(card);
+        }
+
+        function downloadImage(pageNum, imageData, format) {
+            const a = document.createElement('a');
+            a.href = imageData;
+            a.download = `${currentFileName}_p${String(pageNum).padStart(3, '0')}.${format}`;
+            a.click();
+        }
+
+        async function copyToClipboard(imageData, pageNum) {
+            try {
+                const res = await fetch(imageData);
+                const blob = await res.blob();
+                await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+                showSuccess(`ページ ${pageNum} をクリップボードにコピーしました`);
+            } catch {
+                showError('クリップボードへのコピーに失敗しました');
             }
         }
 
-        return [...new Set(pages)].sort((a, b) => a - b);
-    }
+        downloadZipBtn.addEventListener('click', async () => {
+            if (convertedImages.length === 0) return;
+            const zip = new JSZip();
+            const format = formatSelect.value;
+            downloadZipBtn.disabled = true;
+            downloadZipBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 作成中...';
 
-    function addImageToGallery(pageNum, imageData, format) {
-        const card = document.createElement('div');
-        card.className = 'image-card';
+            for (const img of convertedImages) {
+                const res = await fetch(img.data);
+                const blob = await res.blob();
+                zip.file(`${currentFileName}_p${String(img.page).padStart(3, '0')}.${format}`, blob);
+            }
 
-        const img = document.createElement('img');
-        img.className = 'image-preview';
-        img.src = imageData;
+            const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+            const url = URL.createObjectURL(zipBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentFileName}_images.zip`;
+            a.click();
+            URL.revokeObjectURL(url);
 
-        const info = document.createElement('div');
-        info.className = 'image-info';
+            downloadZipBtn.disabled = false;
+            downloadZipBtn.innerHTML = '<i class="fas fa-file-archive"></i> すべてをZIPでダウンロード';
+        });
 
-        const pageLabel = document.createElement('div');
-        pageLabel.className = 'page-label';
-        pageLabel.textContent = `ページ ${pageNum}`;
+        resetBtn.addEventListener('click', () => {
+            isCancelled = true;
+            pdfInput.value = '';
+            pdfDoc = null;
+            convertedImages = [];
+            currentFileName = '';
+            uploadState.style.display = 'block';
+            fileState.style.display = 'none';
+            gallery.innerHTML = '';
+            pagesInput.value = '';
+            hideMessages();
+        });
 
-        const sizeLabel = document.createElement('div');
-        sizeLabel.className = 'page-size';
-        const size = formatFileSize(imageData.length);
-        sizeLabel.textContent = `${size} • ${format.toUpperCase()}`;
-
-        const buttons = document.createElement('div');
-        buttons.className = 'image-buttons';
-
-        const downloadBtn = document.createElement('button');
-        downloadBtn.className = 'btn-image btn-download';
-        downloadBtn.innerHTML = '<i class="fas fa-download"></i> DL';
-        downloadBtn.addEventListener('click', () => downloadImage(pageNum, imageData, format));
-
-        const copyBtn = document.createElement('button');
-        copyBtn.className = 'btn-image btn-copy';
-        copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
-        copyBtn.addEventListener('click', () => copyToClipboard(imageData, pageNum));
-
-        buttons.appendChild(downloadBtn);
-        buttons.appendChild(copyBtn);
-
-        info.appendChild(pageLabel);
-        info.appendChild(sizeLabel);
-        info.appendChild(buttons);
-
-        card.appendChild(img);
-        card.appendChild(info);
-        gallery.appendChild(card);
-    }
-
-    function downloadImage(pageNum, imageData, format) {
-        const link = document.createElement('a');
-        link.href = imageData;
-        link.download = `${currentFileName}_page_${pageNum}.${format}`;
-        link.click();
-    }
-
-    async function copyToClipboard(imageData, pageNum) {
-        try {
-            const response = await fetch(imageData);
-            const blob = await response.blob();
-            await navigator.clipboard.write([
-                new ClipboardItem({ [blob.type]: blob })
-            ]);
-            showSuccess(`ページ ${pageNum} をコピーしました`);
-        } catch (error) {
-            showError('コピーに失敗しました');
-        }
-    }
-
-    downloadZipBtn.addEventListener('click', downloadAsZip);
-
-    async function downloadAsZip() {
-        const zip = new JSZip();
-        const format = formatSelect.value;
-
-        for (const image of convertedImages) {
-            const response = await fetch(image.data);
-            const blob = await response.blob();
-            zip.file(`page_${String(image.page).padStart(3, '0')}.${format}`, blob);
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
         }
 
-        const zipBlob = await zip.generateAsync({ type: 'blob' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(zipBlob);
-        link.download = `${currentFileName}_pages.zip`;
-        link.click();
-        URL.revokeObjectURL(link.href);
-    }
-
-    resetBtn.addEventListener('click', () => {
-        pdfInput.value = '';
-        pdfDoc = null;
-        convertedImages = [];
-        currentFileName = '';
-        uploadState.style.display = 'block';
-        fileState.style.display = 'none';
-        gallery.innerHTML = '';
-        pagesInput.value = '';
-        hideMessages();
-    });
-
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-    }
-
-    function showError(message) {
-        document.getElementById('errorText').textContent = message;
-        errorMessage.classList.add('show');
-        setTimeout(() => {
-            errorMessage.classList.remove('show');
-        }, 5000);
-    }
-
-    function showSuccess(message) {
-        document.getElementById('successText').textContent = message;
-        successMessage.classList.add('show');
-        setTimeout(() => {
+        function showError(msg) {
+            document.getElementById('errorText').textContent = msg;
+            errorMessage.classList.add('show');
             successMessage.classList.remove('show');
-        }, 5000);
-    }
+            clearTimeout(showError._t);
+            showError._t = setTimeout(() => errorMessage.classList.remove('show'), 6000);
+        }
 
-    function hideMessages() {
-        errorMessage.classList.remove('show');
-        successMessage.classList.remove('show');
-    }
-</script>
- 
+        function showSuccess(msg) {
+            document.getElementById('successText').textContent = msg;
+            successMessage.classList.add('show');
+            errorMessage.classList.remove('show');
+            clearTimeout(showSuccess._t);
+            showSuccess._t = setTimeout(() => successMessage.classList.remove('show'), 5000);
+        }
 
+        function hideMessages() {
+            errorMessage.classList.remove('show');
+            successMessage.classList.remove('show');
+        }
+    </script>
 </body>
 </html>
